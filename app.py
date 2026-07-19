@@ -3,6 +3,8 @@
 # NKO Funding Predictor — Streamlit UI
 # ============================================================
 
+import os
+import gdown
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -14,6 +16,31 @@ from catboost import CatBoostClassifier
 MODEL_PATH = 'nko_funding_model_v3_final.cbm'
 THRESHOLD  = 0.750
 
+# Google Drive ID файлов
+GDRIVE_FILES = {
+    'nko_funding_model_v3_final.cbm': '1gPZKgeTwZhRssAzKUOZKWxMHpJcIve1F',
+    'nko_all.parquet':                '1pA6VX8Ee3r0CUELnaR7TbDhZaaLs2DzQ',
+    'nko_enriched.parquet':           '1DEQnc4-CBb_ECFWqXmb6fxjpqHSxfL3s',
+}
+
+# ============================================================
+# АВТОЗАГРУЗКА ФАЙЛОВ С GOOGLE DRIVE
+# ============================================================
+def download_files():
+    for filename, file_id in GDRIVE_FILES.items():
+        if not os.path.exists(filename):
+            st.info(f'Загружаю {filename} с Google Drive...')
+            gdown.download(
+                id=file_id,
+                output=filename,
+                quiet=False
+            )
+
+download_files()
+
+# ============================================================
+# СТРАНИЦА
+# ============================================================
 st.set_page_config(
     page_title='NKO Funding Predictor',
     page_icon='📊',

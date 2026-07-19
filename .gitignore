@@ -1,0 +1,10 @@
+nko_all.parquet
+nko_enriched.parquet
+nko_funding_model_v3_final.cbm
+openngo_2021_26_08/
+catboost_info/
+*.ipynb
+*.json
+__pycache__/
+*.pyc
+.venv/

@@ -1,8 +1,4 @@
 # app.py
-# ============================================================
-# NKO Funding Predictor — Streamlit UI
-# ============================================================
-
 import os
 import gdown
 import streamlit as st
@@ -11,12 +7,20 @@ import numpy as np
 from catboost import CatBoostClassifier
 
 # ============================================================
+# СТРАНИЦА — ДОЛЖНА БЫТЬ ПЕРВОЙ!
+# ============================================================
+st.set_page_config(
+    page_title='NKO Funding Predictor',
+    page_icon='📊',
+    layout='centered'
+)
+
+# ============================================================
 # КОНФИГУРАЦИЯ
 # ============================================================
 MODEL_PATH = 'nko_funding_model_v3_final.cbm'
 THRESHOLD  = 0.750
 
-# Google Drive ID файлов
 GDRIVE_FILES = {
     'nko_funding_model_v3_final.cbm': '1gPZKgeTwZhRssAzKUOZKWxMHpJcIve1F',
     'nko_all.parquet':                '1pA6VX8Ee3r0CUELnaR7TbDhZaaLs2DzQ',
@@ -30,22 +34,10 @@ def download_files():
     for filename, file_id in GDRIVE_FILES.items():
         if not os.path.exists(filename):
             st.info(f'Загружаю {filename} с Google Drive...')
-            gdown.download(
-                id=file_id,
-                output=filename,
-                quiet=False
-            )
+            url = f'https://drive.google.com/uc?id={file_id}'
+            gdown.download(url, filename, quiet=False, fuzzy=True)
 
 download_files()
-
-# ============================================================
-# СТРАНИЦА
-# ============================================================
-st.set_page_config(
-    page_title='NKO Funding Predictor',
-    page_icon='📊',
-    layout='centered'
-)
 
 # ============================================================
 # ЗАГРУЗКА МОДЕЛИ
@@ -148,10 +140,9 @@ if st.button('Рассчитать вероятность', type='primary'):
         'opf_name'   : opf
     }])
 
-    proba  = model.predict_proba(input_df)[0, 1]
-    pred   = int(proba >= THRESHOLD)
+    proba = model.predict_proba(input_df)[0, 1]
+    pred  = int(proba >= THRESHOLD)
 
-    # --- Результат ---
     st.markdown('### Результат')
 
     col_res1, col_res2 = st.columns(2)
@@ -168,11 +159,9 @@ if st.button('Рассчитать вероятность', type='primary'):
         else:
             st.error('Вероятно не получит финансирование')
 
-    # --- Шкала ---
     st.markdown('**Уровень уверенности модели:**')
     st.progress(float(proba))
 
-    # --- Интерпретация ---
     st.markdown('---')
     st.markdown('### Что это значит')
 
@@ -203,7 +192,6 @@ if st.button('Рассчитать вероятность', type='primary'):
             'исторические паттерны, а не формальные требования конкурсов.'
         )
 
-    # --- Технические детали ---
     with st.expander('Технические детали'):
         st.markdown(f"""
         | Параметр | Значение |
